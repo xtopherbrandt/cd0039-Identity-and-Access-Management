@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth
+from .database.models import setup_db
 
 
 app = Flask(__name__)
