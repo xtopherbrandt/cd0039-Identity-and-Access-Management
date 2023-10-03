@@ -5,6 +5,8 @@ from urllib.request import urlopen
 import json
 from dotenv import find_dotenv, load_dotenv
 
+from .errors_handling import AuthError
+
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
