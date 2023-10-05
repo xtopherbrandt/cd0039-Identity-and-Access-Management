@@ -15,10 +15,30 @@ from .errors_handling import AuthError
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-#with app.app_context():
-#    db_drop_and_create_all()
+
 
 # ROUTES
+
+@app.route('/database', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def drop_db(jwt):
+    success = False
+    
+    try:
+        with app.app_context():
+            db_drop_and_create_all()
+            success = True
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
+        abort(500)
+            
+    return jsonify({
+        'success': success
+    })
+
 '''
     GET /drinks
         it should be a public endpoint
@@ -32,7 +52,11 @@ def get_drinks():
     drinks = []
     try:
         drinks_unformatted = Drink.query.all()
-    except:
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
         abort(500)
         
     drinks = [drink.short() for drink in drinks_unformatted]
@@ -44,7 +68,6 @@ def get_drinks():
     })
 
 '''
-@TODO implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
@@ -53,13 +76,17 @@ def get_drinks():
 '''
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def get_drinks_detail():
+def get_drinks_detail(jwt):
     success = False
     drinks = []
 
     try:
         drinks_unformatted = Drink.query.all()
-    except:
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
         abort(500)
         
     drinks = [drink.long() for drink in drinks_unformatted]
@@ -80,7 +107,37 @@ def get_drinks_detail():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def post_drinks(jwt):
+    success = False
+    
+    data = request.get_json()
 
+    if 'title' not in data or 'recipe' not in data:
+        print(f'Body must include a title and recipe. {data}')
+        abort(400)
+    
+    drink_with_title = Drink.query.filter_by(title=data['title']).all()
+    if len(drink_with_title) > 0:
+        print(f'Drink with title {data["title"]} exists')
+        abort(400)
+        
+    recipe = json.dumps(data['recipe'])
+    try:
+        new_drink = Drink(title=data['title'], recipe=recipe)
+        new_drink.insert()
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
+        abort(500)
+       
+    return jsonify({
+        'success': success,
+        'drinks': new_drink.long()
+    })
 
 '''
 @TODO implement endpoint
