@@ -9,35 +9,8 @@ from .auth.auth import requires_auth
 from .app import app
 from .errors_handling import AuthError
 
-'''
-@TODO uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-!! Running this funciton will add one
-'''
-
-
 # ROUTES
 
-@app.route('/database', methods=['DELETE'])
-@requires_auth('delete:drinks')
-def drop_db(jwt):
-    success = False
-    
-    try:
-        with app.app_context():
-            db_drop_and_create_all()
-            success = True
-    except Exception as e:
-        if hasattr(e, 'message'):
-            print(e.message)
-        else:
-            print(e)
-        abort(500)
-            
-    return jsonify({
-        'success': success
-    })
 
 '''
     GET /drinks
@@ -182,7 +155,6 @@ def patch_drinks(jwt, id):
     })
 
 '''
-@TODO implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -215,4 +187,30 @@ def delete_drinks(jwt, id):
     return jsonify({
         'success': success,
         'delete': id
+    })
+
+'''
+    DELETE /database
+        it should require the 'delete:drinks' permission
+    returns status code 200 and json {"success": True }
+        or appropriate status code indicating reason for failure
+'''
+@app.route('/database', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def drop_db(jwt):
+    success = False
+    
+    try:
+        with app.app_context():
+            db_drop_and_create_all()
+            success = True
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+        else:
+            print(e)
+        abort(500)
+            
+    return jsonify({
+        'success': success
     })
