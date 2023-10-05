@@ -1,0 +1,4 @@
+https://dev-boa4pqqkkm3qz05i.us.auth0.com/authorize?response_type=token&client_id=4sRGMbgDhUoGYxsvXYzHcWThDKGezq8K&redirect_uri=http://localhost:5000/callback&audience=udacity-coffee-shop
+https://dev-boa4pqqkkm3qz05i.us.auth0.com/v2/logout?client_id=4sRGMbgDhUoGYxsvXYzHcWThDKGezq8K&return_to=http://localhost:5000/callback
+
+https://dev-boa4pqqkkm3qz05i.us.auth0.com/.well-known/jwks.json

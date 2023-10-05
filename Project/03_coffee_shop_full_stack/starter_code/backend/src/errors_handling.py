@@ -33,7 +33,7 @@ def handle_unauthorized(error):
 def handle_forbidden(error):
     return jsonify({
         "success": False, 
-        "error": 401, 
+        "error": 403, 
         "message": "forbidden"
     }), 403
         
